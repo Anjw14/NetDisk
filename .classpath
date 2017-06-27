@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<accessrules>
+			<accessrule kind="accessible" pattern="sun/**"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="F:/SoftWare/Eclipse/quartz-2.2.3-distribution/quartz-2.2.3/lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="F:/SoftWare/Eclipse/quartz-2.2.3-distribution/quartz-2.2.3/lib/quartz-2.2.3.jar"/>
+	<classpathentry kind="lib" path="F:/SoftWare/Eclipse/quartz-2.2.3-distribution/quartz-2.2.3/lib/quartz-jobs-2.2.3.jar"/>
+	<classpathentry kind="lib" path="F:/SoftWare/Eclipse/quartz-2.2.3-distribution/quartz-2.2.3/lib/slf4j-api-1.7.7.jar"/>
+	<classpathentry kind="lib" path="F:/SoftWare/Eclipse/quartz-2.2.3-distribution/quartz-2.2.3/lib/slf4j-log4j12-1.7.7.jar"/>
+	<classpathentry kind="lib" path="F:/Javawork/Eclipse/NetDisk/commons-net-2.2-bin/commons-net-2.2/commons-net-2.2.jar"/>
+	<classpathentry kind="lib" path="F:/Javawork/Eclipse/NetDisk/beautyeye-3.7/dist/beautyeye_lnf.jar"/>
+	<classpathentry kind="lib" path="jgoodies-common-1.8.0.jar" sourcepath="jgoodies-common-1.8.0-sources.jar"/>
+	<classpathentry kind="lib" path="jgoodies-forms-1.8.0.jar" sourcepath="jgoodies-forms-1.8.0-sources.jar"/>
+	<classpathentry kind="lib" path="F:/Javawork/Eclipse/NetDisk/commons-io-2.4.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
