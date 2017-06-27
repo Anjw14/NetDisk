@@ -7,8 +7,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -25,8 +23,6 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 import Ftp.ListAllFiles;
@@ -111,10 +107,9 @@ public class FileTree extends JTree {
 					listFile.List("");
 					listFile.ListSubFile("/"+name+"/");
 					String path = selectNode.file.isDirectory()? listFile.selectPath + "/" : listFile.selectPath;
-					mainInterface.pathTextField.setText("Path : "+path);
+					mainInterface.pathTextField.setText("Ftp:/"+path);
 					tableFtpFiles = listFile.ftpFinalFile;
 					mainInterface.ftpTable.tableFlush(mainInterface.tree);
-					System.out.println(tableFtpFiles.length);
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}

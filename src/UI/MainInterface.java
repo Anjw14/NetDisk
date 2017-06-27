@@ -60,13 +60,14 @@ public class MainInterface extends JFrame {
 
 	private JPanel contentPane;
 	private JTable table;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField userDisplayTextField;
+	private JTextField ftpDisplayTextField;
 	
 	public JTextField pathTextField;
 	public FtpTable ftpTable;
 	public FileTree tree;
 	public Login login;
+	public JButton downloadButton;
 
 //	/**
 //	 * Launch the application.
@@ -183,8 +184,18 @@ public class MainInterface extends JFrame {
 		JButton button = new JButton("\u4E0A\u4F20");
 		toolBar.add(button);
 		
-		JButton button_1 = new JButton("\u4E0B\u8F7D");
-		toolBar.add(button_1);
+		downloadButton = new JButton("\u4E0B\u8F7D");
+		downloadButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				System.out.println("666");
+				
+				
+				
+			}
+		});
+		downloadButton.setEnabled(false);
+		toolBar.add(downloadButton);
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setResizeWeight(1.0);
@@ -208,16 +219,17 @@ public class MainInterface extends JFrame {
 		gbc_label.gridy = 0;
 		panel.add(label, gbc_label);
 		
-		textField_1 = new JTextField();
-		textField_1.setHorizontalAlignment(SwingConstants.LEFT);
-		textField_1.setEditable(false);
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.anchor = GridBagConstraints.EAST;
-		gbc_textField_1.insets = new Insets(0, 0, 0, 5);
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 0;
-		panel.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		userDisplayTextField = new JTextField();
+		userDisplayTextField.setHorizontalAlignment(SwingConstants.LEFT);
+		userDisplayTextField.setEditable(false); 
+		userDisplayTextField.setText(login.name);
+		GridBagConstraints gbc_userDisplayTextField = new GridBagConstraints();
+		gbc_userDisplayTextField.anchor = GridBagConstraints.EAST;
+		gbc_userDisplayTextField.insets = new Insets(0, 0, 0, 5);
+		gbc_userDisplayTextField.gridx = 1;
+		gbc_userDisplayTextField.gridy = 0;
+		panel.add(userDisplayTextField, gbc_userDisplayTextField);
+		userDisplayTextField.setColumns(10);
 		
 		JLabel label_1 = new JLabel("\u4E3B\u7AD9\u5730\u5740");
 		label_1.setHorizontalAlignment(SwingConstants.LEFT);
@@ -228,15 +240,16 @@ public class MainInterface extends JFrame {
 		gbc_label_1.gridy = 0;
 		panel.add(label_1, gbc_label_1);
 		
-		textField_2 = new JTextField();
-		textField_2.setHorizontalAlignment(SwingConstants.LEFT);
-		textField_2.setEditable(false);
-		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.anchor = GridBagConstraints.EAST;
-		gbc_textField_2.gridx = 3;
-		gbc_textField_2.gridy = 0;
-		panel.add(textField_2, gbc_textField_2);
-		textField_2.setColumns(10);
+		ftpDisplayTextField = new JTextField();
+		ftpDisplayTextField.setHorizontalAlignment(SwingConstants.LEFT);
+		ftpDisplayTextField.setEditable(false);
+		ftpDisplayTextField.setText(login.ipAddress);
+		GridBagConstraints gbc_ftpDisplayTextField = new GridBagConstraints();
+		gbc_ftpDisplayTextField.anchor = GridBagConstraints.EAST;
+		gbc_ftpDisplayTextField.gridx = 3;
+		gbc_ftpDisplayTextField.gridy = 0;
+		panel.add(ftpDisplayTextField, gbc_ftpDisplayTextField);
+		ftpDisplayTextField.setColumns(10);
 		
 		JPanel panel_1 = new JPanel();
 		splitPane.setLeftComponent(panel_1);
@@ -278,7 +291,7 @@ public class MainInterface extends JFrame {
 		pathTextField.setEditable(false);
 		
 		JSplitPane splitPane_3 = new JSplitPane();
-		splitPane_3.setResizeWeight(0.5);
+		splitPane_3.setResizeWeight(0.7);
 		splitPane_3.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane_2.setRightComponent(splitPane_3);
 		
@@ -323,18 +336,18 @@ public class MainInterface extends JFrame {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
 		panel_2.add(scrollPane, gbc_scrollPane);
+
+		/*******************JTree********************/
 		
-//		JTree tree = new JTree();
 		tree = new FileTree(this);
 		scrollPane.setViewportView(tree);
 
 		/*******************JTable*******************/
 		
-		ftpTable = new FtpTable(tree);
+		ftpTable = new FtpTable(tree,this);
 		table = ftpTable.table;
 		scrollPane_1.setViewportView(table);
 		
-		/*******************JTable*******************/
 	}
 }
 

@@ -44,21 +44,6 @@ public class ListAllFiles {
         if(this.login(ip.getHostAddress(), 21, "FtpUser", "Anjianwei"))  
         	this.List("/");
         this.disConnection(); 
-//        System.out.println(arFiles.toString());
-//        InputStream iStream = ftp.retrieveFileStream("chap01.pdf");
-//        File file = File.createTempFile("mmp", null);
-//    	FileUtils.copyInputStreamToFile(iStream, file);
-
-//    	InputStreamReader nr = new InputStreamReader(new FileInputStream(file), "gbk");
-//		BufferedReader read = new BufferedReader(nr);
-//		String lineTxt = null;
-//		while ((lineTxt = read.readLine()) != null) {
-//			System.out.println(lineTxt);
-//		}
-//		read.close();
-    	
-//    	System.out.println(file.getName()+"**********");
-//    	System.out.println(iStream.toString()+"\n");
     }  
       
     /** 

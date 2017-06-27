@@ -35,7 +35,7 @@ public class Login extends JFrame {
 	private JPasswordField passwordField;
 	private JTextField textField_2;
 	
-	public String ipAddress, User, password;
+	public String ipAddress, User, password, name;
 	public int portNum;
 
 //	/**
@@ -124,6 +124,7 @@ public class Login extends JFrame {
 			public void mouseClicked(MouseEvent arg0) {
 				String password = new String(passwordField.getPassword());
 				ftpLogin(textField.getText(), textField_1.getText(), password , Integer.parseInt(textField_3.getText()), login);
+				name = textField_2.getText();
 			}
 		});
 		btnNewButton.setBounds(131, 222, 93, 34);
@@ -154,6 +155,7 @@ public class Login extends JFrame {
 		textField_2 = new JTextField();
 		textField_2.setColumns(10);
 		textField_2.setBounds(225, 168, 120, 22);
+		textField_2.setText("Anla");
 		contentPane.add(textField_2);
 	}
 	
