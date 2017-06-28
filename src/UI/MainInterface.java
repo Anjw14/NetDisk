@@ -23,6 +23,9 @@ import javax.swing.UIManager;
 
 import com.sun.java.swing.plaf.nimbus.*;
 
+import Ftp.UploadThread;
+import Test.UploadTest;
+
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import com.jgoodies.forms.factories.DefaultComponentFactory;
@@ -35,10 +38,12 @@ import javax.swing.JScrollPane;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.spec.ECField;
 
@@ -177,9 +182,8 @@ public class MainInterface extends JFrame {
 		uploadButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
-				
-				
+//				File file = new File("E:/test.txt");  					//记得加后缀，与文件夹区分；
+				new Thread( new UploadThread(login, tree)).start();
 			}
 		});
 		toolBar.add(uploadButton);
@@ -370,6 +374,8 @@ public class MainInterface extends JFrame {
 		
 		tree = new FileTree(this);
 		scrollPane.setViewportView(tree);
+//		new Thread( new FlushThread(this)).start();
+		
 
 		/*******************JTable*******************/
 		
