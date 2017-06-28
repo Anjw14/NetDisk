@@ -32,15 +32,20 @@ import Ftp.ListPointedFile;
 public class FileTree extends JTree {
 	public MainInterface mainInterface;
     public TreePath mouseInPath;
+    public String selectedPath;
+    public String selectedDirPath;
     protected FileSystemView fileSystemView = FileSystemView.getFileSystemView();
-    public ListAllFiles f = new ListAllFiles(false);
-    public ListPointedFile listFile = new ListPointedFile(false, "");
+//    public ListAllFiles f = new ListAllFiles(false);
+//    public ListPointedFile listFile = new ListPointedFile(false, "");
     public FTPFile[] ftpCurrentFile;
     public FTPFile[] tableFtpFiles;
     
     public FileTree(final MainInterface mainInterface ) throws IOException{
     	this.mainInterface = mainInterface;
-        FileTreeModel model=new FileTreeModel(new DefaultMutableTreeNode(new FileNode("Ftp",null,null,true)));
+    	final Login login = this.mainInterface.login;
+    	final ListPointedFile listFile = new ListPointedFile(false, "", login);
+    	final ListAllFiles f = new ListAllFiles(false, this.mainInterface.login);
+        FileTreeModel model=new FileTreeModel(new DefaultMutableTreeNode(new FileNode("Ftp",null,null,true)), this);
         this.setModel(model);
         this.setCellRenderer(new FileTreeRenderer());
     	
@@ -58,7 +63,7 @@ public class FileTree extends JTree {
                     } else {
                     	String name = fileNode.name;
                     	listFile.List("");
-                    	listFile.ListSubFile("/"+name+"/");
+                    	listFile.ListSubFile("/"+name+"/",login);
 						files = listFile.ftpFinalFile;
                     }
                     for (int i = 0; i < files.length; i++) {
@@ -105,8 +110,10 @@ public class FileTree extends JTree {
 				String name = selectNode.name;
             	try {
 					listFile.List("");
-					listFile.ListSubFile("/"+name+"/");
+					listFile.ListSubFile("/"+name+"/", login);
 					String path = selectNode.file.isDirectory()? listFile.selectPath + "/" : listFile.selectPath;
+					selectedPath = path;
+					selectedDirPath = listFile.selectDirPath;
 					mainInterface.pathTextField.setText("Ftp:/"+path);
 					tableFtpFiles = listFile.ftpFinalFile;
 					mainInterface.ftpTable.tableFlush(mainInterface.tree);
@@ -186,7 +193,7 @@ class FileTreeRenderer extends DefaultTreeCellRenderer{
 }
 class FileTreeModel extends DefaultTreeModel {
 	
-    public FileTreeModel(TreeNode root) throws IOException {
+    public FileTreeModel(TreeNode root, FileTree fileTree) throws IOException {
         super(root);
         FileSystemView fileSystemView = FileSystemView.getFileSystemView();
         
@@ -199,7 +206,7 @@ class FileTreeModel extends DefaultTreeModel {
 //	        ((DefaultMutableTreeNode)root).add(childTreeNode);
 //        }
         
-        ListAllFiles f = new ListAllFiles(false);
+        ListAllFiles f = new ListAllFiles(false, fileTree.mainInterface.login);
         FTPFile[] files = f.ftpFiles;
         for (int i = 0; i < files.length; i++) {
         	

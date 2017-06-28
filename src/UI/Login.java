@@ -1,6 +1,5 @@
 package UI;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -22,8 +21,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-
 import javax.swing.JPasswordField;
 
 public class Login extends JFrame {
@@ -36,6 +33,7 @@ public class Login extends JFrame {
 	private JTextField textField_2;
 	
 	public String ipAddress, User, password, name;
+	public FTPClient ftpClient = new FTPClient();
 	public int portNum;
 
 //	/**
@@ -164,14 +162,14 @@ public class Login extends JFrame {
 	 */
 	public static void ftpLogin(String ipAddress, String User, String password, int portNum, Login login) {
 		try {  
-			FTPClient ftpClient = new FTPClient();
-			ftpClient.connect(ipAddress, portNum);// 连接FTP服务器  
-			ftpClient.login(User, password);// 登陆FTP服务器  
-			if (!FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {  
+			login.ftpClient.connect(ipAddress, portNum);// 连接FTP服务器  
+			login.ftpClient.login(User, password);// 登陆FTP服务器  
+			if (!FTPReply.isPositiveCompletion(login.ftpClient.getReplyCode())) {  
 				System.out.println("未连接到FTP，用户名或密码错误。");
-				ftpClient.disconnect();  
-			} else {  
+				login.ftpClient.disconnect();  
+			} else {
 				System.out.println("FTP连接成功。");
+				login.ftpClient.setControlEncoding("GBK");
 				login.ipAddress = ipAddress;
 				login.User = User;
 				login.password = password;

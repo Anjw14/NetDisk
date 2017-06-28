@@ -63,7 +63,7 @@ public class FtpTable {
 		DefaultTableModel model = ( DefaultTableModel) table.getModel();
 		model.setRowCount(0);
 		DecimalFormat decimalFormatter = new DecimalFormat("0.0");
-		SimpleDateFormat dataFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat dataFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		for(FTPFile file : ftpFiles){
 			if(file.isDirectory())
 				size = "<DIR>";
@@ -80,7 +80,6 @@ public class FtpTable {
 			}
 			model.addRow(new Object[] { file, size, dataFormatter.format(file.getTimestamp().getTime()) }); 
 		}
-		
 	}
 	
 	

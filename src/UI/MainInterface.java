@@ -1,20 +1,23 @@
 package UI;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPReply;
+
 import javax.swing.JSplitPane;
-import java.awt.CardLayout;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.Color;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
@@ -23,38 +26,26 @@ import com.sun.java.swing.plaf.nimbus.*;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import com.jgoodies.forms.factories.DefaultComponentFactory;
-import javax.swing.JScrollBar;
-import javax.swing.JProgressBar;
-import javax.swing.JTree;
-import javax.swing.JSpinner;
-import javax.swing.JList;
-import javax.swing.JEditorPane;
-import javax.swing.JTextPane;
-import java.awt.Component;
-import javax.swing.Box;
 import javax.swing.JTabbedPane;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.GridLayout;
 import javax.swing.JScrollPane;
-import javax.swing.JDesktopPane;
-import java.awt.event.ActionListener;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.awt.event.ActionEvent;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.io.OutputStream;
+import java.security.spec.ECField;
+
 import javax.swing.JTextField;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
 
 public class MainInterface extends JFrame {
 
@@ -68,6 +59,7 @@ public class MainInterface extends JFrame {
 	public FileTree tree;
 	public Login login;
 	public JButton downloadButton;
+	
 
 //	/**
 //	 * Launch the application.
@@ -101,7 +93,7 @@ public class MainInterface extends JFrame {
 	 * Create the frame.
 	 * @throws IOException 
 	 */
-	public MainInterface(Login login) throws IOException {
+	public MainInterface(final Login login) throws IOException {
 		
 		this.login = login; 
 		
@@ -181,20 +173,57 @@ public class MainInterface extends JFrame {
 		toolBar.setFloatable(false);
 		splitPane_4.setLeftComponent(toolBar);
 		
-		JButton button = new JButton("\u4E0A\u4F20");
-		toolBar.add(button);
-		
-		downloadButton = new JButton("\u4E0B\u8F7D");
-		downloadButton.addMouseListener(new MouseAdapter() {
+		JButton uploadButton = new JButton("\u4E0A\u4F20");
+		uploadButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				System.out.println("666");
 				
 				
 				
 			}
 		});
+		toolBar.add(uploadButton);
+		
+		downloadButton = new JButton("\u4E0B\u8F7D");
 		downloadButton.setEnabled(false);
+		downloadButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				//下载线程
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						JFileChooser chooser = new JFileChooser();
+						chooser.setDialogTitle("选择下载路径");
+						chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+						int returnVal = chooser.showOpenDialog(chooser);
+						if(returnVal == JFileChooser.CANCEL_OPTION) {
+							System.out.println("取消");
+							return;
+						}
+						String localPath = chooser.getSelectedFile().getAbsolutePath();
+						try {
+							login.ftpClient.changeWorkingDirectory("/");
+							String path = tree.selectedDirPath;
+							File localFile = new File(localPath+"/"+ftpTable.selectedFile.getName());    
+							OutputStream is;
+							is = new FileOutputStream(localFile);
+							System.out.println("下载开始。");
+							if(! login.ftpClient.retrieveFile(ftpTable.selectedFile.getName(), is)){
+								login.ftpClient.changeWorkingDirectory(new String(path.getBytes("GBK"), "iso-8859-1"));
+								login.ftpClient.retrieveFile(ftpTable.selectedFile.getName(), is);
+							}
+							is.close();
+							System.out.println("下载结束。");
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}     
+					}
+				}).start();;
+			}
+		});
 		toolBar.add(downloadButton);
 		
 		JSplitPane splitPane = new JSplitPane();
