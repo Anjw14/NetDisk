@@ -5,11 +5,6 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPReply;
-
 import javax.swing.JSplitPane;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -24,8 +19,6 @@ import javax.swing.UIManager;
 import com.sun.java.swing.plaf.nimbus.*;
 
 import Ftp.UploadThread;
-import Test.UploadTest;
-
 import java.awt.SystemColor;
 import javax.swing.JLabel;
 import com.jgoodies.forms.factories.DefaultComponentFactory;
@@ -36,21 +29,20 @@ import java.awt.Insets;
 import java.awt.GridLayout;
 import javax.swing.JScrollPane;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.spec.ECField;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JTextField;
 import javax.swing.JTable;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JTextArea;
 
 public class MainInterface extends JFrame {
 
@@ -65,6 +57,12 @@ public class MainInterface extends JFrame {
 	public Login login;
 	public JButton downloadButton;
 	
+	public JTextArea propertiesTextArea;
+	public JTextArea noteTextArea;
+	public JTextArea historyTextArea;
+	private boolean modifyFlag = false;
+	final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");//设置日期格式
+
 
 //	/**
 //	 * Launch the application.
@@ -97,8 +95,9 @@ public class MainInterface extends JFrame {
 	/**
 	 * Create the frame.
 	 * @throws IOException 
+	 * @throws SQLException 
 	 */
-	public MainInterface(final Login login) throws IOException {
+	public MainInterface(final Login login) throws IOException, SQLException {
 		
 		this.login = login; 
 		
@@ -149,47 +148,24 @@ public class MainInterface extends JFrame {
 		splitPane_5.setLeftComponent(splitPane_4);
 		splitPane_4.setDividerSize(0);
 		
-		JMenuBar menuBar_1 = new JMenuBar();
-		menuBar_1.setEnabled(false);
-		menuBar_1.setBackground(SystemColor.menu);
-		splitPane_4.setRightComponent(menuBar_1);
-		
-		JMenu mnNewMenu = new JMenu("\u5907\u6CE8");
-		mnNewMenu.setBackground(Color.WHITE);
-		menuBar_1.add(mnNewMenu);
-		
-		JMenuItem menuItem_1 = new JMenuItem("\u4FEE\u6539\u5907\u6CE8");
-		mnNewMenu.add(menuItem_1);
-		
-		JMenuItem menuItem = new JMenuItem("\u65B0\u5EFA\u5907\u6CE8");
-		mnNewMenu.add(menuItem);
-		
-		JMenu menu = new JMenu("\u67E5\u627E");
-		menu.setBackground(Color.WHITE);
-		menuBar_1.add(menu);
-		
-		JMenuItem menuItem_2 = new JMenuItem("\u67E5\u627E\u6587\u4EF6\u5939");
-		menu.add(menuItem_2);
-		
-		JMenuItem menuItem_3 = new JMenuItem("\u67E5\u627E\u6587\u4EF6");
-		menu.add(menuItem_3);
-		
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		splitPane_4.setLeftComponent(toolBar);
 		
 		JButton uploadButton = new JButton("\u4E0A\u4F20");
+		uploadButton.setFocusable(false);
 		uploadButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 //				File file = new File("E:/test.txt");  					//记得加后缀，与文件夹区分；
-				new Thread( new UploadThread(login, tree)).start();
+				new Thread( new UploadThread(login, tree, ftpTable.mySql, historyTextArea)).start();
 			}
 		});
 		toolBar.add(uploadButton);
 		
 		downloadButton = new JButton("\u4E0B\u8F7D");
 		downloadButton.setEnabled(false);
+		downloadButton.setFocusable(false);
 		downloadButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -219,9 +195,15 @@ public class MainInterface extends JFrame {
 							}
 							is.close();
 							System.out.println("下载结束。");
+							String historyText = (login.name+" 于  "+df.format(new Date())+" 下载了文件 【"+ftpTable.selectedFile.getName()+"】 。");
+							ftpTable.mySql.addExistFileNote("history", historyText+"\n");
+							historyTextArea.setText(ftpTable.mySql.getNote("history"));
 						} catch (FileNotFoundException e) {
 							e.printStackTrace();
 						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (SQLException e) {
+							
 							e.printStackTrace();
 						}     
 					}
@@ -229,6 +211,66 @@ public class MainInterface extends JFrame {
 			}
 		});
 		toolBar.add(downloadButton);
+		
+		JButton newNoteButton = new JButton("\u6DFB\u52A0\u5907\u6CE8");
+		newNoteButton.setFocusable(false);
+		newNoteButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				noteTextArea.setEditable(true);
+				noteTextArea.setText("");
+			}
+		});
+		toolBar.add(newNoteButton);
+		
+		JButton modifyNoteButton = new JButton("\u4FEE\u6539\u5907\u6CE8");
+		modifyNoteButton.setFocusable(false);
+		modifyNoteButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				noteTextArea.setEditable(true);
+				modifyFlag = true;
+			}
+		});
+		toolBar.add(modifyNoteButton);
+		
+		JButton uploadNoteButton = new JButton("\u63D0\u4EA4\u5907\u6CE8");
+		uploadButton.setFocusable(false);
+		uploadNoteButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					String historyText;
+					if(! ftpTable.mySql.isNoted(pathTextField.getText())){
+						ftpTable.mySql.addFileNote(pathTextField.getText(), ftpTable.selectedFile.getName(), (login.name+" 于  "+df.format(new Date())+"  添加备注：\t"+noteTextArea.getText()+"\n"));
+						historyText = (login.name+" 于  "+df.format(new Date())+" 对文件 【"+ftpTable.selectedFile.getName()+"】 添加了备注。");
+						ftpTable.mySql.addExistFileNote("history", historyText+"\n");
+						historyTextArea.setText(ftpTable.mySql.getNote("history"));
+					}
+					else if(modifyFlag){
+						ftpTable.mySql.changeNote(pathTextField.getText(), noteTextArea.getText());
+						modifyFlag = false;
+						historyText = (login.name+" 于  "+df.format(new Date())+" 对文件 【"+ftpTable.selectedFile.getName()+"】 修改了备注。");
+						ftpTable.mySql.addExistFileNote("history", historyText+"\n");
+						historyTextArea.setText(ftpTable.mySql.getNote("history"));
+					} else{
+						ftpTable.mySql.addExistFileNote(pathTextField.getText(), (login.name+" 于  "+df.format(new Date())+"  添加备注：\t"+noteTextArea.getText()+"\n"));
+						historyText = (login.name+" 于  "+df.format(new Date())+" 对文件 【"+ftpTable.selectedFile.getName()+"】 添加了备注。");
+						ftpTable.mySql.addExistFileNote("history", historyText+"\n");
+						historyTextArea.setText(ftpTable.mySql.getNote("history"));
+					}
+					noteTextArea.setEditable(false);
+					noteTextArea.setText(ftpTable.mySql.getNote(pathTextField.getText()));
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		toolBar.add(uploadNoteButton);
+		
+		JPanel panel_5 = new JPanel();
+		panel_5.setBackground(Color.WHITE);
+		splitPane_4.setRightComponent(panel_5);
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setResizeWeight(1.0);
@@ -334,17 +376,29 @@ public class MainInterface extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		splitPane_3.setRightComponent(tabbedPane);
 		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		tabbedPane.addTab("Properties", null, scrollPane_2, null);
+		JScrollPane propertiesPane = new JScrollPane();
+		tabbedPane.addTab("Properties", null, propertiesPane, null);
 		
-		JScrollPane scrollPane_3 = new JScrollPane();
-		tabbedPane.addTab("Notes", null, scrollPane_3, null);
+		propertiesTextArea = new JTextArea();
+		propertiesTextArea.setEditable(false);
+		propertiesPane.setViewportView(propertiesTextArea);
 		
-		JScrollPane scrollPane_4 = new JScrollPane();
-		tabbedPane.addTab("History", null, scrollPane_4, null);
+		JScrollPane notePane = new JScrollPane();
+		tabbedPane.addTab("Notes", null, notePane, null);
 		
-		JScrollPane scrollPane_5 = new JScrollPane();
-		tabbedPane.addTab("Preview", null, scrollPane_5, null);
+		noteTextArea = new JTextArea();
+		noteTextArea.setEditable(false);
+		notePane.setViewportView(noteTextArea);
+		
+		JScrollPane historyPane = new JScrollPane();
+		tabbedPane.addTab("History", null, historyPane, null);
+		
+		historyTextArea = new JTextArea();
+		historyTextArea.setEditable(false);
+		historyPane.setViewportView(historyTextArea);
+		
+		JScrollPane previewView = new JScrollPane();
+		tabbedPane.addTab("Preview", null, previewView, null);
 		
 		JPanel panel_2 = new JPanel();
 		splitPane_1.setLeftComponent(panel_2);
@@ -355,7 +409,7 @@ public class MainInterface extends JFrame {
 		gbl_panel_2.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		panel_2.setLayout(gbl_panel_2);
 		
-		JLabel lblNewJgoodiesTitle = DefaultComponentFactory.getInstance().createTitle("\u6587\u4EF6");
+		JLabel lblNewJgoodiesTitle = DefaultComponentFactory.getInstance().createTitle("FTP\u6587\u4EF6");
 		lblNewJgoodiesTitle.setHorizontalAlignment(SwingConstants.CENTER);
 		GridBagConstraints gbc_lblNewJgoodiesTitle = new GridBagConstraints();
 		gbc_lblNewJgoodiesTitle.insets = new Insets(0, 0, 5, 0);

@@ -2,6 +2,7 @@ package UI;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
@@ -15,6 +16,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import org.apache.commons.net.ftp.FTPFile;
 
+import Sql.MySql;
+
 
 public class FtpTable {
 
@@ -22,6 +25,7 @@ public class FtpTable {
 	public FTPFile[] ftpFiles;
 	public FTPFile selectedFile;
 	public MainInterface mainInterface;
+	public MySql mySql = new MySql();
 	
 	private String size; // 文件大小
 	private long longSize; // 文件大小的长整型类型
@@ -29,7 +33,7 @@ public class FtpTable {
 	private final int MB = (int) Math.pow(1024, 2); // MB单位数值
 	private final int KB = 1024; // KB单位数值
 	
-	public FtpTable(FileTree fileTree, final MainInterface mainInterface) throws IOException{
+	public FtpTable(FileTree fileTree, final MainInterface mainInterface) throws IOException, SQLException{
 		this.mainInterface = mainInterface;
 		table.setShowGrid(false);
 		table.setModel(	
@@ -42,18 +46,34 @@ public class FtpTable {
 		table.getColumnModel().getColumn(4).setPreferredWidth(5);
 		table.getColumnModel().getColumn(0).setCellRenderer(FtpTableCellRanderer.getCellRanderer());
 		
+		if(! mySql.isNoted("history"))
+			mySql.addFileNote("history", "history", "");
+		mainInterface.historyTextArea.setText(mySql.getNote("history"));
 		
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
+				mainInterface.noteTextArea.setEditable(false);
 				if(table.getSelectedRow() != -1){
 					selectedFile = (FTPFile) table.getModel().getValueAt(table.getSelectedRow(), 0);
 					if(selectedFile.isDirectory())
 						mainInterface.downloadButton.setEnabled(false);
-					else
+					else{
 						mainInterface.downloadButton.setEnabled(true);
+						mainInterface.propertiesTextArea.setText("\n    文件名："+selectedFile.getName()+"\n\n    文件版本：v1.0\n\n ");
+						try {
+							if(mySql.isNoted(mainInterface.pathTextField.getText()))
+								mainInterface.noteTextArea.setText(mySql.getNote(mainInterface.pathTextField.getText()));
+							else
+								mainInterface.noteTextArea.setText("");
+						} catch (SQLException e1) {
+							
+							e1.printStackTrace();
+						}
+					}
 				}
 			}
 		});
+		
 	}
 
 	

@@ -14,6 +14,7 @@ import com.sun.java.swing.plaf.nimbus.*;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -21,7 +22,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
+
 import javax.swing.JPasswordField;
+import java.awt.Font;
+import java.awt.Graphics;
 
 public class Login extends JFrame {
 
@@ -75,26 +80,31 @@ public class Login extends JFrame {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("NetDiskLogin");
-		setBounds(100, 100, 502, 323);
+		setBounds(100, 100, 513, 340);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
+		
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
 		JLabel label = new JLabel("\u4E3B\u673A\u5730\u5740\uFF1A");
+		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		label.setBounds(131, 36, 70, 23);
 		contentPane.add(label);
 		
 		JLabel label_1 = new JLabel(" \u7528\u6237\u540D \uFF1A");
+		label_1.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		label_1.setBounds(131, 69, 70, 23);
 		contentPane.add(label_1);
 		
 		JLabel label_2 = new JLabel(" \u5BC6  \u7801  \uFF1A");
+		label_2.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		label_2.setBounds(131, 102, 70, 23);
 		contentPane.add(label_2);
 		
 		JLabel label_3 = new JLabel(" \u7AEF  \u53E3  \uFF1A");
+		label_3.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		label_3.setBounds(131, 135, 70, 23);
 		contentPane.add(label_3);
 		
@@ -121,7 +131,15 @@ public class Login extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				String password = new String(passwordField.getPassword());
-				ftpLogin(textField.getText(), textField_1.getText(), password , Integer.parseInt(textField_3.getText()), login);
+				try {
+					ftpLogin(textField.getText(), textField_1.getText(), password , Integer.parseInt(textField_3.getText()), login);
+				} catch (NumberFormatException e) {
+					
+					e.printStackTrace();
+				} catch (SQLException e) {
+					
+					e.printStackTrace();
+				}
 				name = textField_2.getText();
 			}
 		});
@@ -147,6 +165,7 @@ public class Login extends JFrame {
 		passwordField.setText("Anjianwei");
 		
 		JLabel label_4 = new JLabel(" \u6635  \u79F0  \uFF1A");
+		label_4.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		label_4.setBounds(131, 168, 70, 23);
 		contentPane.add(label_4);
 		
@@ -158,9 +177,10 @@ public class Login extends JFrame {
 	}
 	
 	/**
+	 * @throws SQLException 
 	 * 
 	 */
-	public static void ftpLogin(String ipAddress, String User, String password, int portNum, Login login) {
+	public static void ftpLogin(String ipAddress, String User, String password, int portNum, Login login) throws SQLException {
 		try {  
 			login.ftpClient.connect(ipAddress, portNum);// Á¬½ÓFTP·þÎñÆ÷  
 			login.ftpClient.login(User, password);// µÇÂ½FTP·þÎñÆ÷  

@@ -39,7 +39,7 @@ public class FileTree extends JTree {
 	// public ListPointedFile listFile = new ListPointedFile(false, "");
 	public FTPFile[] ftpCurrentFile;
 	public FTPFile[] tableFtpFiles;
-
+	
 	public FileTree(final MainInterface mainInterface) throws IOException {
 		this.mainInterface = mainInterface;
 		final Login login = this.mainInterface.login;
@@ -103,6 +103,9 @@ public class FileTree extends JTree {
 		// 获得鼠标选中的文件路径
 		addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent e) {
+				
+				mainInterface.noteTextArea.setText("");
+				
 				DefaultMutableTreeNode lastTreeNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
 				FileNode selectNode = (FileNode) lastTreeNode.getUserObject();
 

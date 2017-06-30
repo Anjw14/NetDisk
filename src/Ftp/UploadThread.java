@@ -5,21 +5,32 @@ package Ftp;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
 
+import Sql.MySql;
 import UI.FileTree;
 import UI.Login;
+import UI.MainInterface;
 import UI.TreeFlushThread;
 
 public class UploadThread implements Runnable{
 	
 	private Login login;
 	private FileTree tree;
+	private MySql mySql;
+	private JTextArea historyTextArea;
+	private MainInterface mainInterface;
+	final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");//设置日期格式
 	
-	public UploadThread(Login login, FileTree tree){
+	public UploadThread(Login login, FileTree tree, MySql mySql, JTextArea historyTextArea){
 		this.login = login;
 		this.tree = tree;
+		this.mySql = mySql;
+		this.historyTextArea = historyTextArea;
 	}
 
 	@Override
@@ -35,6 +46,9 @@ public class UploadThread implements Runnable{
 			}
 			this.upload(chooser.getSelectedFile());
 			new Thread(new TreeFlushThread(tree, true)).start();
+			String historyText = (login.name+" 于  "+df.format(new Date())+" 上传了文件 【"+chooser.getSelectedFile().getName()+"】 。");
+			mySql.addExistFileNote("history", historyText+"\n");
+			historyTextArea.setText(mySql.getNote("history"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,6 +71,7 @@ public class UploadThread implements Runnable{
                 }                 
             }      
         }else{      
+        	login.ftpClient.changeWorkingDirectory(new String(tree.selectedDirPath.getBytes("GBK"), "iso-8859-1"));
             FileInputStream input = new FileInputStream(file);      
             login.ftpClient.storeFile(file.getName(), input);      
             input.close();        

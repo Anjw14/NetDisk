@@ -21,7 +21,6 @@ public class TreeFlushThread implements Runnable {
 		
 		try {
 			if(isInstant){
-				System.out.println("3333333333333333");
 				this.tree.model = new FileTreeModel(new DefaultMutableTreeNode(new FileNode("Ftp", null, null, true)), tree);
 				this.tree.setModel(this.tree.model);
 			}else{
@@ -29,9 +28,7 @@ public class TreeFlushThread implements Runnable {
 					Thread.sleep(10*1000);
 					ListAllFiles f = new ListAllFiles(false, this.tree.mainInterface.login);
 					if(tree.model.files.length==f.ftpFiles.length){
-						System.out.println("111111111111111");
 					}else{
-						System.out.println("222222222222222");
 						this.tree.model = new FileTreeModel(new DefaultMutableTreeNode(new FileNode("Ftp", null, null, true)), tree);
 						this.tree.setModel(this.tree.model);
 					}
