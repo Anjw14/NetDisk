@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import javax.swing.JPasswordField;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Label;
 
 public class Login extends JFrame {
 
@@ -59,7 +60,7 @@ public class Login extends JFrame {
 				try {
 //					UIManager.setLookAndFeel(new NimbusLookAndFeel());
 //					org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
-					UIManager.setLookAndFeel(new NimbusLookAndFeel());//ÉèÖÃÒ»¸ö·Ç³£Æ¯ÁÁµÄÍâ¹Û
+					UIManager.setLookAndFeel(new NimbusLookAndFeel());//è®¾ç½®ä¸€ä¸ªéå¸¸æ¼‚äº®çš„å¤–è§‚
 					Login frame = new Login();
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -75,36 +76,41 @@ public class Login extends JFrame {
 	 */
 	public Login() throws UnknownHostException {
 		
-		final Login login = this;								//´«µİLogin()£¬µÇÂ½ºó¹Ø±Õ½çÃæ
+		final Login login = this;								//ä¼ é€’Login()ï¼Œç™»é™†åå…³é—­ç•Œé¢
 		InetAddress ip = InetAddress.getLocalHost();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("NetDiskLogin");
+		setTitle("FtpNetDisk");
 		setBounds(100, 100, 513, 340);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
-		
+		contentPane.setOpaque(false);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		ImageIcon icon=new ImageIcon("src/OtherComponent/login.jpg");  				//è·¯å¾„æ ¼å¼ä¸JTreeä¸åŒ
+		JLabel label_5 = new JLabel(icon);
+		getLayeredPane().add(label_5,new Integer(Integer.MIN_VALUE));
+		label_5.setBounds(0, 0, 600, 630);
+		
 		JLabel label = new JLabel("\u4E3B\u673A\u5730\u5740\uFF1A");
-		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
+		label.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
 		label.setBounds(131, 36, 70, 23);
 		contentPane.add(label);
 		
 		JLabel label_1 = new JLabel(" \u7528\u6237\u540D \uFF1A");
-		label_1.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
+		label_1.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
 		label_1.setBounds(131, 69, 70, 23);
 		contentPane.add(label_1);
 		
 		JLabel label_2 = new JLabel(" \u5BC6  \u7801  \uFF1A");
-		label_2.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
+		label_2.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
 		label_2.setBounds(131, 102, 70, 23);
 		contentPane.add(label_2);
 		
 		JLabel label_3 = new JLabel(" \u7AEF  \u53E3  \uFF1A");
-		label_3.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
+		label_3.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
 		label_3.setBounds(131, 135, 70, 23);
 		contentPane.add(label_3);
 		
@@ -126,7 +132,7 @@ public class Login extends JFrame {
 		contentPane.add(textField_3);
 		textField_3.setText("21");
 		
-		JButton btnNewButton = new JButton("\u767B  \u9646");			//µÇÂ½
+		JButton btnNewButton = new JButton("\u767B  \u9646");			//ç™»é™†
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -146,7 +152,7 @@ public class Login extends JFrame {
 		btnNewButton.setBounds(131, 222, 93, 34);
 		contentPane.add(btnNewButton);
 		
-		JButton button = new JButton("\u91CD  \u7F6E");					//ÖØÖÃ
+		JButton button = new JButton("\u91CD  \u7F6E");					//é‡ç½®
 		button.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -165,7 +171,7 @@ public class Login extends JFrame {
 		passwordField.setText("Anjianwei");
 		
 		JLabel label_4 = new JLabel(" \u6635  \u79F0  \uFF1A");
-		label_4.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
+		label_4.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
 		label_4.setBounds(131, 168, 70, 23);
 		contentPane.add(label_4);
 		
@@ -182,13 +188,13 @@ public class Login extends JFrame {
 	 */
 	public static void ftpLogin(String ipAddress, String User, String password, int portNum, Login login) throws SQLException {
 		try {  
-			login.ftpClient.connect(ipAddress, portNum);// Á¬½ÓFTP·şÎñÆ÷  
-			login.ftpClient.login(User, password);// µÇÂ½FTP·şÎñÆ÷  
+			login.ftpClient.connect(ipAddress, portNum);// è¿æ¥FTPæœåŠ¡å™¨  
+			login.ftpClient.login(User, password);// ç™»é™†FTPæœåŠ¡å™¨  
 			if (!FTPReply.isPositiveCompletion(login.ftpClient.getReplyCode())) {  
-				System.out.println("Î´Á¬½Óµ½FTP£¬ÓÃ»§Ãû»òÃÜÂë´íÎó¡£");
+				System.out.println("æœªè¿æ¥åˆ°FTPï¼Œç”¨æˆ·åæˆ–å¯†ç é”™è¯¯ã€‚");
 				login.ftpClient.disconnect();  
 			} else {
-				System.out.println("FTPÁ¬½Ó³É¹¦¡£");
+				System.out.println("FTPè¿æ¥æˆåŠŸã€‚");
 				login.ftpClient.setControlEncoding("GBK");
 				login.ipAddress = ipAddress;
 				login.User = User;
@@ -200,10 +206,10 @@ public class Login extends JFrame {
 			}  
 		} catch (SocketException e) {  
 			e.printStackTrace();  
-			System.out.println("FTPµÄIPµØÖ·¿ÉÄÜ´íÎó£¬ÇëÕıÈ·ÅäÖÃ¡£");  
+			System.out.println("FTPçš„IPåœ°å€å¯èƒ½é”™è¯¯ï¼Œè¯·æ­£ç¡®é…ç½®ã€‚");  
 		} catch (IOException e) {  
 			e.printStackTrace();  
-			System.out.println("FTPµÄ¶Ë¿Ú´íÎó,ÇëÕıÈ·ÅäÖÃ¡£");  
+			System.out.println("FTPçš„ç«¯å£é”™è¯¯,è¯·æ­£ç¡®é…ç½®ã€‚");  
 		}
 	}
 }
